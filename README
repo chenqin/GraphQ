@@ -1,0 +1,13 @@
+Q Graph Database
+
+LGPL v2.0
+
+This is a tiny graph databse written in Java
+It try to provide minimal functionality while allow user do modification at will
+-allow user do CRUD over graph model dataset DONE
+-implement GAS pattern DONE
+-implement event chain handling PENDING
+-transaction PENDING
+
+WHY JAVA
+write fast, lots of cloud stack built upon java good for potential integration
