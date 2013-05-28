@@ -2,6 +2,7 @@ package edu.cs.dartmouth.qdb.kernel;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.TreeSet;
 
 /**
  * serve as base class of edge
@@ -40,7 +41,9 @@ public abstract class Edge extends D{
 		this.start = start;
 		this.end = end;
 		this.dp = dp;
+		if(start.edges == null) start.edges = new TreeSet<Edge>();
 		start.edges.add(this);
+		if(end.edges == null) end.edges = new TreeSet<Edge>();
 		end.edges.add(this);
 	}
 	

@@ -16,21 +16,23 @@ public class Graph implements Serializable{
 	
 	private static final long serialVersionUID = -983186075335916922L;
 	
-	public Set<Vertex> vertices = new TreeSet<Vertex>();
-	public Set<Edge> edges = new TreeSet<Edge>();
+	public Set<Vertex> vertices = null;
+	public Set<Edge> edges = null;
+	
 	public Graph(){
-		
+		vertices = new TreeSet<Vertex>();
+		edges = new TreeSet<Edge>();
 	}
 	
-	public void addVertice(Vertex node){
+	public void addV(Vertex node){
 		vertices.add(node);
 	}
 	
-	public void addEdge(Edge e){
+	public void addE(Edge e){
 		edges.add(e);
 	}
 	
-	public void removeVertice(Vertex node){
+	public void removeV(Vertex node){
 		vertices.remove(node);
 		
 		for(Edge e : node.edges){
@@ -38,7 +40,7 @@ public class Graph implements Serializable{
 		}
 	}
 	
-	public void removeEdge(Edge e){
+	public void removeE(Edge e){
 		edges.remove(e);
 		e.unlink();
 	}
