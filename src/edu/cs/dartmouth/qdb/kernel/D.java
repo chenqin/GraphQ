@@ -20,6 +20,10 @@ public class D implements Comparable<Object>, Cloneable{
 	public D(){
 		tp = new Timestamp(now.getTime());
 	}
+	
+	public static Timestamp getNewTP(){
+			return new Timestamp((new Date().getTime()));
+	}
 
 	@Override
 	public int compareTo(Object o) {
