@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
@@ -18,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.cs.dartmouth.gdbkernel.test.GraphSimpleTest.PageRankApply;
 import edu.cs.dartmouth.qdb.kernel.D;
 import edu.cs.dartmouth.qdb.kernel.Edge;
 import edu.cs.dartmouth.qdb.kernel.Graph;
@@ -104,14 +100,31 @@ public class GooglePageRankTest {
 	};
 	
 	static class Site extends Vertex{
+		int sitenum;
 		public Site(String from){
-			this.val = Integer.valueOf(from);
+			sitenum = Integer.valueOf(from);
+			this.set(D.getNewTP(), 1f);
+		}
+		public void setRank(float rank){
+			this.set(D.getNewTP(), rank);
+		}
+		public float getRank(){
+			return (Float) this.val;
 		}
 	};
 	
 	static class Link extends Edge{
 		public Link(Vertex from, Vertex to){
 			super(from,to,DIRECTION.direct);
+			this.set(D.getNewTP(), 1f);
+		}
+		
+		public void setRatio(float ratio){
+			this.set(D.getNewTP(), ratio);
+		}
+		
+		public float getRatio(){
+			return (Float) this.getValue();
 		}
 	};
 	
@@ -120,8 +133,22 @@ public class GooglePageRankTest {
 		@Override
 		public D gather(Vertex self, Collection<Edge> edges,
 				Collection<Vertex> othervertices) {
-			// TODO Auto-generated method stub
-			return null;
+			D d = new D();
+			d.setValue(self.getValue());
+			
+			float sum = 0;
+			for(Edge e : edges){
+				if(e.getConnectingVertex(self) != null) continue;
+				Link l = (Link) e;
+				sum += l.getRatio();
+			}
+			for(Edge e : edges){
+				if(e.getConnectingVertex(self) != null) continue;
+				Link l = (Link)e;
+				l.setRatio(l.getRatio()/sum);
+				d.setValue((Float)d.getValue()+((Float)(e.getStart().getValue()))*l.getRatio());
+			}
+			return d;
 		}
 
 		@Override
@@ -136,8 +163,7 @@ public class GooglePageRankTest {
 
 		@Override
 		public void apply(Vertex v, D delta) {
-			// TODO Auto-generated method stub
-			
+			v.setValue((Float)v.getValue()*0.85+0.15*(Float)delta.getValue());
 		}
 		
 	};

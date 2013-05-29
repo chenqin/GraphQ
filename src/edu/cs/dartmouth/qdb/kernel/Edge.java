@@ -26,6 +26,13 @@ public abstract class Edge extends D{
 		
 	}
 	
+	public Vertex getStart(){
+		return start;
+	}
+	public Vertex getEnd(){
+		return end;
+	}
+	
 	public Vertex getConnectingVertex(Vertex u){
 		if(u == this.start && u != this.end) return this.end;
 		else if(this.dp == DIRECTION.bidirect){
