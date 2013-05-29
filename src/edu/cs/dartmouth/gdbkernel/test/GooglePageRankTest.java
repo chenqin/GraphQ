@@ -101,15 +101,17 @@ public class GooglePageRankTest {
 	
 	static class Site extends Vertex{
 		int sitenum;
+		float rank;
 		public Site(String from){
 			sitenum = Integer.valueOf(from);
-			this.set(D.getNewTP(), 1f);
+			this.set(D.getNewTP(), new Float(1f));
 		}
 		public void setRank(float rank){
-			this.set(D.getNewTP(), rank);
+			this.rank = rank;
+			this.set(D.getNewTP(), new Float(rank));
 		}
 		public float getRank(){
-			return (Float) this.val;
+			return rank;
 		}
 	};
 	
@@ -119,11 +121,11 @@ public class GooglePageRankTest {
 			this.set(D.getNewTP(), 1f);
 		}
 		
-		public void setRatio(float ratio){
-			this.set(D.getNewTP(), ratio);
+		public void setRatio(Float ratio){
+			this.set(D.getNewTP(),ratio);
 		}
 		
-		public float getRatio(){
+		public Float getRatio(){
 			return (Float) this.getValue();
 		}
 	};
@@ -134,7 +136,7 @@ public class GooglePageRankTest {
 		public D gather(Vertex self, Collection<Edge> edges,
 				Collection<Vertex> othervertices) {
 			D d = new D();
-			d.setValue(self.getValue());
+			d.setValue(new Float(0));
 			
 			float sum = 0;
 			for(Edge e : edges){
@@ -146,7 +148,7 @@ public class GooglePageRankTest {
 				if(e.getConnectingVertex(self) != null) continue;
 				Link l = (Link)e;
 				l.setRatio(l.getRatio()/sum);
-				d.setValue((Float)d.getValue()+((Float)(e.getStart().getValue()))*l.getRatio());
+				d.setValue(new Float((Float)d.getValue()+((Float)(e.getStart().getValue()))*l.getRatio()));
 			}
 			return d;
 		}
@@ -163,7 +165,8 @@ public class GooglePageRankTest {
 
 		@Override
 		public void apply(Vertex v, D delta) {
-			v.setValue((Float)v.getValue()*0.85+0.15*(Float)delta.getValue());
+			Site s = (Site) v;
+			s.setRank((Float)(s.getRank()*0.85f+0.15f*(Float)delta.getValue()));
 		}
 		
 	};
@@ -197,12 +200,18 @@ public class GooglePageRankTest {
 		log.info(String.valueOf(g.vertices.size()));
 		
 		log.info("start simulation one iteration"+D.getNewTP().toLocaleString());
-		for(Vertex s : g.vertices){
-			D d = g.Gather(s, PageRankGather.class);
-			g.Apply(s, d, PageRankApply.class);
-			g.Scatter(s, d, PageRankScatter.class);
+		
+		while(true){
+			D d = null;
+			log.info("vertices size is " + String.valueOf(g.vertices.size()));
+			for(Vertex s : g.vertices){
+				d = g.Gather(s, PageRankGather.class);
+				g.Apply(s, d, PageRankApply.class);
+				g.Scatter(s, d, PageRankScatter.class);
+			}
+			
+			log.info("one iteration done "+D.getNewTP().toLocaleString()+ " " +String.valueOf((Float)d.getValue()));
 		}
-		log.info("end of iteration"+ D.getNewTP().toLocaleString());
 	}
 	
 	@After

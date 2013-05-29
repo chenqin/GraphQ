@@ -18,6 +18,7 @@ public class D implements Comparable<Object>, Cloneable{
 	protected Object val;
 	
 	public D(){
+		this.val = new Object();
 		tp = new Timestamp(now.getTime());
 	}
 	
